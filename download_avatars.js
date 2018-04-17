@@ -1,5 +1,5 @@
+require('dotenv').config();
 var request = require('request');
-var secret = require('./secrets');
 var fs = require('fs');
 var rowner = process.argv[2];
 var rname = process.argv[3];
@@ -11,7 +11,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
     headers: {
       'User-Agent': 'request',
-      'Authorization': 'token' + secret.GITHUB_TOKEN
+      'Authorization': 'token' + process.env.GITHUB_TOKEN
     }
   };
 
@@ -39,10 +39,6 @@ function downloadImageByURL(url, filePath) {
 }
 
 
-
-
-// when refactoring we could name the anonymous call back function something like "get avatar urls"
-
 // introduce error checking to require at the 2 arguments
 if (rowner === undefined || rname === undefined) {
   console.log("This application requires 2 arguments: Repo Owner and Repo Name. Please enter and try again.");
@@ -50,6 +46,7 @@ if (rowner === undefined || rname === undefined) {
 
   console.log('Welcome to the GitHub Avatar Downloader! 👾');
 
+// when refactoring we could name the anonymous call back function something like "get avatar urls"
   getRepoContributors(rowner, rname, function(err, result) {
     var data = JSON.parse(result);
 
