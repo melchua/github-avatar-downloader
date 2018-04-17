@@ -1,6 +1,8 @@
 var request = require('request');
 var secret = require('./secrets');
 var fs = require('fs');
+var rowner = process.argv[2];
+var rname = process.argv[3];
 
 
 function getRepoContributors(repoOwner, repoName, cb) {
@@ -18,7 +20,6 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
-// testing
 
 function downloadImageByURL(url, filePath) {
 
@@ -38,19 +39,28 @@ function downloadImageByURL(url, filePath) {
 }
 
 
-console.log('Welcome to the GitHub Avatar Downloader! 👾');
 
 
 // when refactoring we could name the anonymous call back function something like "get avatar urls"
-getRepoContributors("jquery", "jquery", function(err, result) {
-  var data = JSON.parse(result);
 
-  var dir = "./avatars";
-  if (!fs.existsSync(dir)){
-    fs.mkdirSync(dir);
-  }
+// introduce error checking to require at the 2 arguments
+if (rowner === undefined || rname === undefined) {
+  console.log("This application requires 2 arguments: Repo Owner and Repo Name. Please enter and try again.");
+} else {
 
-  data.forEach(function (contrib) {
-    downloadImageByURL(contrib.avatar_url, 'avatars/' + contrib.login + '.jpg');
+  console.log('Welcome to the GitHub Avatar Downloader! 👾');
+
+  getRepoContributors(rowner, rname, function(err, result) {
+    var data = JSON.parse(result);
+
+    var dir = "./avatars";
+    if (!fs.existsSync(dir)){
+      fs.mkdirSync(dir);
+    }
+
+    data.forEach(function (contrib) {
+      downloadImageByURL(contrib.avatar_url, 'avatars/' + contrib.login + '.jpg');
+    });
   });
-});
+
+}
